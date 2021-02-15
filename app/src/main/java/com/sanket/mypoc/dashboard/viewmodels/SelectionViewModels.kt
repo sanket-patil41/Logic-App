@@ -4,14 +4,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.sanket.mypoc.dashboard.models.Fruit
 import com.sanket.mypoc.dashboard.repositories.MainRepository
+import javax.inject.Inject
 
-class SelectionViewModels : ViewModel() {
+class SelectionViewModels @Inject constructor(var  mainRepository: MainRepository): ViewModel() {
 
-    val mainRepository: MainRepository
-
-    init {
-        mainRepository = MainRepository()
-    }
 
     fun getFruits(): MutableLiveData<Map<String, Fruit>> {
 

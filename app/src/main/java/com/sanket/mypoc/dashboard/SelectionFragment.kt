@@ -8,17 +8,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sanket.mypoc.R
 import com.sanket.mypoc.dashboard.adapters.SelectionAdapter
+import com.sanket.mypoc.dashboard.daggers.components.DaggerMainComponents
 import com.sanket.mypoc.dashboard.fragments.ConfirmFragment
 import com.sanket.mypoc.dashboard.interfaces.AddMinusListener
 import com.sanket.mypoc.dashboard.interfaces.NavigateFragmentListener
 import com.sanket.mypoc.dashboard.models.Fruit
 import com.sanket.mypoc.dashboard.viewmodels.SelectionViewModels
+import javax.inject.Inject
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -37,7 +40,11 @@ class SelectionFragment : Fragment(), AddMinusListener {
     lateinit var recylerview: RecyclerView
     lateinit var btn_submit:Button
     lateinit var selectionAdapter: SelectionAdapter
-    val selectionViewModels: SelectionViewModels by activityViewModels()
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    val selectionViewModels: SelectionViewModels by activityViewModels(){
+        viewModelFactory
+    }
     lateinit var navigateFragmentListener:NavigateFragmentListener
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +60,7 @@ class SelectionFragment : Fragment(), AddMinusListener {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_selection, container, false)
+        DaggerMainComponents.builder().build().inject(this)
         init(view)
         initRecylerview()
         observerViewModels()
@@ -100,7 +108,7 @@ class SelectionFragment : Fragment(), AddMinusListener {
     }
 
     fun observerViewModels() {
-        var isCalled = true
+      //  selectionViewModels = ViewModelProvider(this, viewModelFactory).get(SelectionViewModels::class.java)
         selectionViewModels.getFruits().observe(viewLifecycleOwner, {
             it?.let {
                 selectionAdapter.setData(it.values.toList())

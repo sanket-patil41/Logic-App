@@ -6,15 +6,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sanket.mypoc.R
 import com.sanket.mypoc.dashboard.adapters.ShowAdapter
+import com.sanket.mypoc.dashboard.daggers.components.DaggerMainComponents
 import com.sanket.mypoc.dashboard.interfaces.AddMinusListener
 import com.sanket.mypoc.dashboard.models.Fruit
 import com.sanket.mypoc.dashboard.viewmodels.SelectionViewModels
+import javax.inject.Inject
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -32,7 +35,11 @@ class ConfirmFragment : Fragment() {
     private var param2: String? = null
     lateinit var recylerview: RecyclerView
     lateinit var showAdapter: ShowAdapter
-    val selectionViewModels: SelectionViewModels by activityViewModels()
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+    val selectionViewModels: SelectionViewModels by activityViewModels(){
+        viewModelFactory
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -47,6 +54,7 @@ class ConfirmFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_confirm, container, false)
+        DaggerMainComponents.builder().build().inject(this)
         init(view)
         initRecylerview()
         observerViewModels()
@@ -84,7 +92,7 @@ class ConfirmFragment : Fragment() {
     }
 
     fun observerViewModels() {
-
+       // selectionViewModels = ViewModelProvider(this, viewModelFactory).get(SelectionViewModels::class.java)
         selectionViewModels.getFruits().observe(viewLifecycleOwner, {
             it?.let {
                 showAdapter.setData(it.values.toList())
